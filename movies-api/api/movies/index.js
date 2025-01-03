@@ -1,6 +1,7 @@
 import movieModel from './movieModel';
 import asyncHandler from 'express-async-handler';
 import express from 'express';
+import Review from './reviewModel';
 import { getUpcomingMovies } from '../tmdb-api';
 import { getMovieGenres } from '../tmdb-api';
 import { getPopularMovie } from '../tmdb-api';
@@ -66,19 +67,35 @@ router.get('/tmdb/nowPlaying', asyncHandler(async (req, res) =>{
     res.status(200).json(popularMovies);
 }));
 
+//Get movie images
+router.get('/tmdb/images/:movieId', asyncHandler(async (req, res) => {
+    const { movieId } = req.params;
+    const movieGenres = await getMovieImages(movie_id);
+    res.status(200).json(movieGenres);
+}));
 
 //Get movie reviews
-router.get('/tmdb/reviews/:movie_id', asyncHandler(async (req, res) => {
-    const { movie_id } = req.params;
+router.get('/tmdb/reviews/:movieId', asyncHandler(async (req, res) => {
+    const { movieId } = req.params;
     const movieGenres = await getMovieReviews(movie_id);
     res.status(200).json(movieGenres);
 }));
 
-//Get movie images
-router.get('/tmdb/images/:movie_id', asyncHandler(async (req, res) => {
-    const { movie_id } = req.params;
-    const movieGenres = await getMovieImages(movie_id);
-    res.status(200).json(movieGenres);
-}));
+//Add movie reviews
+router.post('/:movieId/review', asyncHandler(async (req, res) => {
+    const { movieId } = req.params;
+    const { userId, content } = req.body;
+    
+    if(!userId || !content) {
+        return res.status(400).json({ success: false, msg: 'UserId and Content are required.'})
+    };
+    const existingReview = await Review.findOne({userId, movieId});
+    if(existingReview) {
+        return res.status(409).json({ success: false, msg: 'You have already reviewed this movie.'})
+    }
+    const addReview = await Review.create({userId, movieId, content});
+
+    res.status(201).json({success: true, msg: 'Review successfully added.'})
+}))
 
 export default router;
