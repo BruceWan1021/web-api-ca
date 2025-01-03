@@ -5,6 +5,7 @@ import users from './users';
 import movies from './movies';
 import User from '../api/users/userModel';
 import Movie from '../api/movies/movieModel';
+import Favourite from '../api/favourites/favouritesModel';
 
 async function main() {
     if (process.env.NODE_ENV !== 'development') {
@@ -17,6 +18,7 @@ async function main() {
     await Movie.collection.drop().catch(err => console.log('Movie collection not found'));
     await User.create(users);
     await Movie.create(movies);
+    await Favourite.create();
     console.log('Database initialised');
     console.log(`${users.length} users loaded`);
     console.log(`${movies.length} movies loaded`);

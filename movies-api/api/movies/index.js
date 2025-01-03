@@ -80,4 +80,5 @@ router.get('/tmdb/images/:movie_id', asyncHandler(async (req, res) => {
     const movieGenres = await getMovieImages(movie_id);
     res.status(200).json(movieGenres);
 }));
+
 export default router;
