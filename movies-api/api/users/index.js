@@ -51,11 +51,36 @@ router.post('/:userId/favourite', asyncHandler(async (req, res) => {
     if (!userId || !movieId) {
         return res.status(400).json({ success: false, msg: 'UserId and MovieId are required.' });
     }
+    const existingFavourite = await Favourite.findOne({ userId, movieId });
+    if(existingFavourite) {
+        return res.status(401).json({ success: false, msg: 'It has already been in favourite list.'})
+    }
 
     await Favourite.create({ userId, movieId });
-
     res.status(201).json({ success: true, msg: 'Favourite successfully added.' });
 }));
+
+//Get all favourites
+router.get('/:userId/favourites', asyncHandler(async (req, res) => {
+    const favourites = await Favourite.find(req.params);
+    res.status(200).json(favourites);
+}))
+
+//Delete the favourite movie
+router.delete('/:userId/favourite', asyncHandler(async (req, res) => {
+    const { userId } = req.params; 
+    const { movieId } = req.body;
+
+    if (!userId || !movieId) {
+        return res.status(400).json({ success: false, msg: 'UserId and MovieId are required.' });
+    }
+    const existingFavourite = await Favourite.findOne({ userId, movieId });
+    if (!existingFavourite) {
+        return res.status(404).json({ success: false, msg: 'Favourite not found.' });
+    }
+    await Favourite.findOneAndDelete({ userId, movieId });
+    res.status(200).json({ success: true, msg: 'Favourite successfully deleted.' });
+}))
 
 async function registerUser(req, res) {
     // Add input validation logic here
