@@ -5,7 +5,7 @@ import users from './users';
 import movies from './movies';
 import User from '../api/users/userModel';
 import Movie from '../api/movies/movieModel';
-import Favourite from '../api/favourites/favouritesModel';
+import Favourite from '../api/users/favouritesModel';
 
 async function main() {
     if (process.env.NODE_ENV !== 'development') {

@@ -2,6 +2,7 @@ import express from 'express';
 import User from './userModel';
 import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
+import Favourite from './favouritesModel';
 
 const router = express.Router(); // eslint-disable-line
 
@@ -41,6 +42,20 @@ router.put('/:id', async (req, res) => {
         res.status(404).json({ code: 404, msg: 'Unable to Update User' });
     }
 });
+
+//Post favourite movies
+router.post('/:userId/favourite', asyncHandler(async (req, res) => {
+    const { userId } = req.params; 
+    const { movieId } = req.body; 
+
+    if (!userId || !movieId) {
+        return res.status(400).json({ success: false, msg: 'UserId and MovieId are required.' });
+    }
+
+    await Favourite.create({ userId, movieId });
+
+    res.status(201).json({ success: true, msg: 'Favourite successfully added.' });
+}));
 
 async function registerUser(req, res) {
     // Add input validation logic here
