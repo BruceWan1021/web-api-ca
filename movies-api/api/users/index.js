@@ -43,6 +43,39 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+const validatePassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(password);
+};
+
+async function registerUser(req, res) {
+    // Add input validation logic here
+    const { username, password } = req.body;
+    if (!validatePassword(password)) {
+        return res.status(400).json({
+            success: false,
+            msg:'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character'
+        });
+    } 
+    await User.create(username, password);
+    res.status(201).json({ success: true, msg: 'User successfully created.' });
+}
+
+async function authenticateUser(req, res) {
+    const user = await User.findByUserName(req.body.username);
+    if (!user) {
+        return res.status(401).json({ success: false, msg: 'Authentication failed. User not found.' });
+    }
+
+    const isMatch = await user.comparePassword(req.body.password);
+    if (isMatch) {
+        const token = jwt.sign({ username: user.username }, process.env.SECRET);
+        res.status(200).json({ success: true, token: 'BEARER ' + token });
+    } else {
+        res.status(401).json({ success: false, msg: 'Wrong password.' });
+    }
+}
+
 //Post favourite movies
 router.post('/:userId/favourite', asyncHandler(async (req, res) => {
     const { userId } = req.params; 
@@ -82,25 +115,5 @@ router.delete('/:userId/favourite', asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, msg: 'Favourite successfully deleted.' });
 }))
 
-async function registerUser(req, res) {
-    // Add input validation logic here
-    await User.create(req.body);
-    res.status(201).json({ success: true, msg: 'User successfully created.' });
-}
-
-async function authenticateUser(req, res) {
-    const user = await User.findByUserName(req.body.username);
-    if (!user) {
-        return res.status(401).json({ success: false, msg: 'Authentication failed. User not found.' });
-    }
-
-    const isMatch = await user.comparePassword(req.body.password);
-    if (isMatch) {
-        const token = jwt.sign({ username: user.username }, process.env.SECRET);
-        res.status(200).json({ success: true, token: 'BEARER ' + token });
-    } else {
-        res.status(401).json({ success: false, msg: 'Wrong password.' });
-    }
-}
 
 export default router;

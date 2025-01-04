@@ -1,75 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { getRequestToken, createSession } from '../../api/tmdb-api';
-import Container from "@mui/material/Container";
-import Button from '@mui/material/Button';
-import Typography from "@mui/material/Typography";
-import Alert from '@mui/material/Alert';
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { TextField, Button, Container, Typography, Box, Alert, Link } from '@mui/material';
 
+const LoginPage = () => {
+  const [account, setAccount] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-const LoginForm = () => {
-    const [requestToken, setRequestToken] = useState('');
-    const [sessionId, setSessionId] = useState('');
-    const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError('');
 
-    const navigate = useNavigate();
+    // Basic validation
+    if (!account || !password) {
+      setError('Please fill in all fields.');
+      return;
+    }
 
-    useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('request_token');
-        if (token) {
-            createSession(token)
-                .then((session) => {
-                    setSessionId(session);
-                    sessionStorage.setItem('sessionId', session);
-                    setIsAuthenticated(true);
-                    setTimeout(() => {
-                        navigate("/");
-                        window.location.reload();
-                    }, 1000);
-                })
-                .catch((error) => {
-                    setIsAuthenticated(false);
-                    console.error("Error creating session:", error);
-                    alert("Fail create session")
-                });
-        }
-    }, []);
+    // Simulate a login process
+    console.log('Logging in with:', { account, password });
+    alert('Login successful!');
+  };
 
-    const handleGetRequestToken = async () => {
-        try {
-            const token = await getRequestToken();
-            setRequestToken(token);
-            alert("Request token generated. Please authorize the app.");
-            window.location.href = `https://www.themoviedb.org/authenticate/${token}?redirect_to=${encodeURIComponent(window.location.href)}`;
-        } catch (error) {
-            console.error("Error generating request token:", error);
-        }
-    };
-
-    return (
-        <Container style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
-            <Typography variant="h4" gutterBottom>
-                TMDB Login
-            </Typography>
-            {!isAuthenticated ? (
-                <>
-                    <Button 
-                        onClick={handleGetRequestToken} 
-                        variant="contained" 
-                        color="primary"
-                        style={{ margin: '10px', padding: '10px 20px' }}
-                    >
-                        Get Authorization
-                    </Button>
-                </>
-            ) : (
-                <>
-                    <Alert severity="success">Session created successfully!</Alert>
-                </>
-            )}
-        </Container>
-    );
+  return (
+    <Container maxWidth="xs" sx={{ mt: 8 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          boxShadow: 3,
+          p: 4,
+          borderRadius: 2,
+          backgroundColor: 'background.paper',
+        }}
+      >
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField margin="normal" fullWidth id="account" label="Account" name="account"
+            autoComplete="username" autoFocus value={account} onChange={(e) => setAccount(e.target.value)}
+          />
+          <TextField
+            margin="normal" fullWidth name="password" label="Password" type="password"
+            id="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Login
+          </Button>
+        </Box>
+        <Typography variant="body2" sx={{ mt: 2 }}>
+          Don&apos;t have an account? <Link href="/registe">Register</Link>
+        </Typography>
+      </Box>
+    </Container>
+  );
 };
 
-export default LoginForm;
+export default LoginPage;
