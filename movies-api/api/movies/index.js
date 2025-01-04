@@ -2,7 +2,7 @@ import movieModel from './movieModel';
 import asyncHandler from 'express-async-handler';
 import express from 'express';
 import Review from './reviewModel';
-import { getMovieDetail, getMovies } from '../tmdb-api';
+import { getActorCredits } from '../tmdb-api';
 import { getUpcomingMovies } from '../tmdb-api';
 import { getMovieGenres } from '../tmdb-api';
 import { getPopularMovie } from '../tmdb-api';
@@ -10,6 +10,9 @@ import { getNowPlayingMovie } from '../tmdb-api';
 import { getMovieReviews } from '../tmdb-api';
 import { getMovieImages } from '../tmdb-api';
 import { getMovieActors } from '../tmdb-api';
+import { getActorDetail } from '../tmdb-api';
+import {getMovies} from '../tmdb-api';
+import {getMovieDetail} from '../tmdb-api';
 
 const router = express.Router();
 
@@ -40,18 +43,6 @@ router.get('/tmdb/movies', asyncHandler(async (req, res) => {
     res.status(200).json(movies);
 }));
 
-
-// Get movie details
-router.get('/tmdb/:movieId', asyncHandler(async (req, res) => {
-    const {movieId} = req.params;
-    const movieDetails = await getMovieDetail(movieId);
-    if (movieDetails) {
-        res.status(200).json(movieDetails);
-    } else {
-        res.status(404).json({message: 'The movie you requested could not be found.', status_code: 404});
-    }
-}));
-
 //Get upcoming movies
 router.get('/tmdb/upcoming', asyncHandler(async (req, res) => {
     const upcomingMovies = await getUpcomingMovies();
@@ -59,10 +50,16 @@ router.get('/tmdb/upcoming', asyncHandler(async (req, res) => {
 }));
 
 //Get movies genres
-router.get('/tmdb/genres/:movie_id', asyncHandler(async (req, res) => {
-    const { movie_id } = req.params;
-    const movieGenres = await getMovieGenres(movie_id);
+router.get('/tmdb/genres', asyncHandler(async (req, res) => {
+    const movieGenres = await getMovieGenres();
     res.status(200).json(movieGenres);
+}));
+
+// Get movie details
+router.get('/tmdb/:movieId', asyncHandler(async (req, res) => {
+    const {movieId} = req.params;
+    const movieDetails = await getMovieDetail(movieId);
+    res.status(200).json(movieDetails);
 }));
 
 //Get popular movies
@@ -145,5 +142,18 @@ router.get('/tmdb/movieActors/:movieId', asyncHandler(async (req, res) => {
     res.status(200).json(movieActors);
 }));
 
+//Get actor details
+router.get('/tmdb/actors/:actorId', asyncHandler(async (req, res) => {
+    const { actorId } = req.params;
+    const actorDetail = await getActorDetail(actorId);
+    res.status(200).json(actorDetail);
+}));
+
+//Get actor credits
+router.get('/tmdb/actors/credits/:actorId', asyncHandler(async (req, res) => {
+    const { actorId } = req.params;
+    const creditsDetail = await getActorCredits(actorId);
+    res.status(200).json(creditsDetail);
+}));
 
 export default router;

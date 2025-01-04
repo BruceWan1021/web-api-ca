@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { useQuery } from "react-query";
-import { getActorCredits } from "../../api/tmdb-api";
+import { getActorCredits } from "../../api/moviesAPI";
 import Grid from "@mui/material/Grid2";
 import Button from "@mui/material/Button"
 import Box from "@mui/material/Box"

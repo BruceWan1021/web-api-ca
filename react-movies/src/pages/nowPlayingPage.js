@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { getNowPlaying } from "../api/tmdb-api";
+import { getNowplaying } from "../api/moviesAPI";
 import PageTemplate from '../components/templateMovieListPage';
 import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';
@@ -12,7 +12,7 @@ const NowPlayingPage = (props) => {
   const [page, setPage] = useState(1); 
   const { data, error, isLoading, isError } = useQuery(
     ['discover', page],
-    getNowPlaying,
+    getNowplaying,
     { keepPreviousData: true }
   );
 

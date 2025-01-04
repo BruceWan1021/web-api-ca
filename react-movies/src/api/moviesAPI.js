@@ -11,10 +11,8 @@ export const getMovieDetails = async ({queryKey}) => {
     return await fetchAPI(`/movies/tmdb/${id}`)
 }
 
-export const getMovieGenres = async ({queryKey}) => {
-    const [, idPart] = queryKey;
-    const { id } = idPart;
-    return await fetchAPI(`/movies/tmdb/genres/${id}`)
+export const getGenres = async () => {
+    return await fetchAPI(`/movies/tmdb/genres`)
 }
 
 export const getUpcomingMovies =async ({queryKey}) => {
@@ -22,12 +20,12 @@ export const getUpcomingMovies =async ({queryKey}) => {
     return await fetchAPI(`/movies/tmdb/upcoming?page=${page}`);
 }
 
-export const getPopularMovies =async ({queryKey}) => {
+export const getPopularMovie =async ({queryKey}) => {
     const [, page] = queryKey;
     return await fetchAPI(`/movies/tmdb/popular?page=${page}`);
 }
 
-export const getNowplayingMovies =async ({queryKey}) => {
+export const getNowplaying =async ({queryKey}) => {
     const [, page] = queryKey;
     return await fetchAPI(`/movies/tmdb/nowPlaying?page=${page}`);
 }
@@ -42,4 +40,16 @@ export const getMovieActors =async ({queryKey}) => {
     const [, idPart] = queryKey;
     const { id } = idPart;
     return await fetchAPI(`/movies/tmdb/movieActors/${id}`);
+}
+
+export const getActorDetails =async ({queryKey}) => {
+    const [, idPart] = queryKey;
+    const { id } = idPart;
+    return await fetchAPI(`/movies/tmdb/actors/${id}`);
+}
+
+export const getActorCredits = async ({queryKey}) => {
+    const [, idPart] = queryKey;
+    const { id } = idPart;
+    return await fetchAPI(`/movies/tmdb/actors/credits/${id}`);
 }

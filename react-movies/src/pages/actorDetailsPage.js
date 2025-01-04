@@ -3,13 +3,13 @@ import { useParams } from 'react-router-dom';
 import ActorDetails from "../components/actorDetails";
 import PageTemplate from "../components/templateActorPage";
 import { useQuery } from "react-query";
-import { getActor } from "../api/tmdb-api";
+import { getActorDetails } from "../api/moviesAPI";
 
 const ActorPage = (props) => {
   const { id } = useParams();
   const { data: actor, error, isLoading, isError } = useQuery(
     ["actor", { id: id }],
-    getActor
+    getActorDetails
   );
 
   if (isLoading) {

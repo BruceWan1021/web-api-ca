@@ -3,7 +3,7 @@ import PageTemplate from "../components/templateMoviePage";
 import ReviewForm from "../components/reviewForm";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
-import { getMovie } from "../api/tmdb-api";
+import { getMovieDetails } from "../api/moviesAPI";
 import Spinner from "../components/spinner";
 
 const WriteReviewPage = (props) => {
@@ -12,7 +12,7 @@ const WriteReviewPage = (props) => {
 
   const { data: movie, error, isLoading, isError } = useQuery(
     ["movie", { id: movieId }],
-    getMovie
+    getMovieDetails
   );
 
   if (isLoading) {

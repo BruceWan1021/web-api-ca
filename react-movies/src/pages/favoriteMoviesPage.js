@@ -29,7 +29,7 @@ import React, { useContext } from "react";
 import PageTemplate from "../components/templateMovieListPage";
 import { MoviesContext } from "../context/moviesContext";
 import { useQueries } from "react-query";
-import { getMovie } from "../api/tmdb-api";
+import { getMovieDetails } from "../api/moviesAPI";
 import Spinner from '../components/spinner'
 import RemoveFromFavorites from "../components/cardIcons/removeFromFavorites";
 import WriteReview from "../components/cardIcons/writeReview";
@@ -42,7 +42,7 @@ const FavoriteMoviesPage = () => {
     movieIds.map((movieId) => {
       return {
         queryKey: ["movie", { id: movieId }],
-        queryFn: getMovie,
+        queryFn: getMovieDetails,
       };
     })
   );
