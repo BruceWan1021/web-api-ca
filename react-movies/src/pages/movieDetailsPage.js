@@ -136,7 +136,7 @@ import { useParams } from 'react-router-dom';
 import MovieDetails from "../components/movieDetails/";
 import PageTemplate from "../components/templateMoviePage";
 // import useMovie from "../hooks/useMovie";
-import { getMovie } from '../api/tmdb-api'
+import { getMovieDetails } from '../api/moviesAPI'
 import { useQuery } from "react-query";
 import Spinner from '../components/spinner'
 
@@ -144,7 +144,7 @@ const MoviePage = (props) => {
   const { id } = useParams();
   const { data: movie, error, isLoading, isError } = useQuery(
     ["movie", { id: id }],
-    getMovie
+    getMovieDetails
   );
 
   if (isLoading) {

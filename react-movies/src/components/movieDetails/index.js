@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import Drawer from "@mui/material/Drawer";
 import MovieReviews from "../movieReviews"
 import { useQuery } from "react-query";
-import { getMovieActors } from "../../api/tmdb-api";
+import { getMovieActors } from "../../api/moviesAPI";
 import {Link} from "react-router-dom"
 import Grid from '@mui/material/Grid';
 import AddRating from '../cardIcons/addRating'
