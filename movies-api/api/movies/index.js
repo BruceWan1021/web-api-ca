@@ -7,7 +7,7 @@ import { getMovieGenres } from '../tmdb-api';
 import { getPopularMovie } from '../tmdb-api';
 import { getNowPlayingMovie } from '../tmdb-api';
 import { getMovieReviews } from '../tmdb-api';
-import { getMovieImages } from '../tmdb-api'
+import { getMovieImages } from '../tmdb-api';
 
 const router = express.Router();
 
@@ -43,6 +43,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
     }
 }));
 
+//Get upcoming movies
 router.get('/tmdb/upcoming', asyncHandler(async (req, res) => {
     const upcomingMovies = await getUpcomingMovies();
     res.status(200).json(upcomingMovies);
@@ -93,9 +94,39 @@ router.post('/:movieId/review', asyncHandler(async (req, res) => {
     if(existingReview) {
         return res.status(409).json({ success: false, msg: 'You have already reviewed this movie.'})
     }
-    const addReview = await Review.create({userId, movieId, content});
-
+    await Review.create({userId, movieId, content});
     res.status(201).json({success: true, msg: 'Review successfully added.'})
+}))
+
+//Modify movie review
+router.put('/:movieId/review/:reviewId', asyncHandler(async (req, res) => {
+    const { reviewId } = req.params;
+    const { content } = req.body;
+
+    if (!content) {
+        return res.status(400).json({ success: false, msg: 'Content is required to update the review.' });
+    }
+    const updatedReview = await Review.findByIdAndUpdate(
+        reviewId,
+        { content, updatedAt: Date.now() },
+        { new: true } 
+    );
+    if (!updatedReview) {
+        return res.status(404).json({ success: false, msg: 'Review not found.' });
+    }
+    res.status(200).json({ success: true, msg: 'Review successfully updated.'});
+}));
+
+//Delete movie review
+router.delete('/:movieId/review/:reviewId',asyncHandler(async (req, res) => {
+    const { reviewId } = req.params;
+
+    const existingReview = await Review.findById(reviewId);
+    if(!existingReview) {
+        return res.status(404).json({ success: false, msg: 'Review not found.' });
+    }
+    await Review.findByIdAndDelete(reviewId);
+    res.status(200).json({ success: true, msg: 'Review successfully delete.'});
 }))
 
 export default router;
