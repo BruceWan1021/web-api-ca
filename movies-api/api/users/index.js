@@ -43,21 +43,15 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-const validatePassword = (password) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return regex.test(password);
-};
-
 async function registerUser(req, res) {
     // Add input validation logic here
     const { username, password } = req.body;
-    if (!validatePassword(password)) {
-        return res.status(400).json({
-            success: false,
-            msg:'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character'
-        });
-    } 
-    await User.create(username, password);
+    
+    const existingUser = await User.findByUserName(username);
+    if(existingUser) {
+        return res.status(409).json({success: false, msg: 'Username already exists'});
+    }
+    await User.create(req.body);
     res.status(201).json({ success: true, msg: 'User successfully created.' });
 }
 

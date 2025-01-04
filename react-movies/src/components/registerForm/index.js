@@ -1,37 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TextField, Button, Container, Typography, Box, Alert, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/authContext';
 
 const RegisterPage = () => {
+  const context = useContext(AuthContext);
   const [account, setAccount] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    // Basic validation
-    if (!account || !email || !password || !confirmPassword) {
-      setError('Please fill in all fields.');
+    setError("");
+  
+    if (!account || !password || !confirmPassword) {
+      setError("Please fill in all fields.");
       return;
     }
-
+  
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError("Passwords do not match.");
       return;
     }
-
-    // Simulate a registration process
-    console.log('Registering with:', { account, email, password });
-    alert('Registration successful!');
-
-    // Redirect to login page
-    navigate('/login');
+  
+    try {
+      const success = await context.register(account, password);
+      if (success) {
+        alert("Registration successful!");
+        navigate("/login");
+      } else {
+        setError("Registration failed.");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during registration.");
+    }
   };
+  
 
   return (
     <Container maxWidth="xs" sx={{ mt: 8 }}>
@@ -46,9 +52,6 @@ const RegisterPage = () => {
           backgroundColor: 'background.paper',
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom>
-          Register
-        </Typography>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
@@ -61,16 +64,6 @@ const RegisterPage = () => {
             autoFocus
             value={account}
             onChange={(e) => setAccount(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             margin="normal"

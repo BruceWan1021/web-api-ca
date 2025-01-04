@@ -1,7 +1,10 @@
 import React from "react"; 
 import LoginForm from "../components/loginForm";
 
+
 const LoginPage = () => {
+    
+
     return (
         <div style={styles.container}>
             <h2>Login to TMDb</h2>

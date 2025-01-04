@@ -12,7 +12,6 @@ import { styled } from '@mui/material/styles';
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Avatar from '@mui/material/Avatar';
-import { getAccountDetails } from "../../api/tmdb-api";
 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
@@ -44,27 +43,11 @@ const SiteHeader = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const getAvatarUrl = (userData) => {
-    const avatarPath = userData?.avatar?.tmdb?.avatar_path;
-    const gravatarHash = userData?.avatar?.gravatar?.hash;
-
-    if (avatarPath) {
-      return `https://image.tmdb.org/t/p/w200${avatarPath}`;
-    } else if (gravatarHash) {
-      return `https://www.gravatar.com/avatar/${gravatarHash}?d=identicon`;
-    } else {
-      return "/static/images/avatar/default.jpg";
-    }
-  };
-
   useEffect(() => {
     const sessionId = sessionStorage.getItem("sessionId");
     console.log("Session ID from sessionStorage:", sessionId);
     if (sessionId) {
       setIsAuthenticated(true);
-      getAccountDetails(sessionId)
-        .then((data) => setUserData(data))
-        .catch((error) => console.error("Error fetching account details:", error));
     }
   }, []);
 
@@ -161,7 +144,6 @@ const SiteHeader = () => {
 
           <Avatar
             alt={userData?.username || "User"}
-            src={getAvatarUrl(userData)}
             style={{ marginLeft: "10px", cursor: "pointer" }}
             onClick={handleAvatarMenuToggle}
           />
@@ -181,7 +163,6 @@ const SiteHeader = () => {
           >
             {isAuthenticated ? (
               [
-                <MenuItem key="introduction" >Hi,{userData?.username} </MenuItem>,
                 <MenuItem key="favourites" onClick={() => navigate("/movies/favorites")}>FAVOURITES</MenuItem>,
                 <MenuItem key="watchlist" onClick={() => navigate("/movies/watchlist")}>WATCHLIST</MenuItem>,
                 <MenuItem key="logout" onClick={handleLoginOrLogout}>LOGOUT</MenuItem>

@@ -1,25 +1,38 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from "react"; 
 import { TextField, Button, Container, Typography, Box, Alert, Link } from '@mui/material';
+import { Navigate, useLocation } from 'react-router-dom';
+import { AuthContext } from "../../context/authContext";
 
 const LoginPage = () => {
-  const [account, setAccount] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const context = useContext(AuthContext);
+  let location = useLocation();
+
+  const { from } = location.state?.from?.pathname ? location.state : { from: "/" };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Basic validation
-    if (!account || !password) {
+    if (!userName || !password) {
       setError('Please fill in all fields.');
       return;
     }
 
-    // Simulate a login process
-    console.log('Logging in with:', { account, password });
-    alert('Login successful!');
+    try {
+      await context.authenticate(userName, password);
+    } catch (err) {
+      setError('Login failed: ' + (err.message || 'Invalid username or password.'));
+    }
   };
+
+  if (context.isAuthenticated) {
+    window.location.href = from;
+    return null; 
+  }
 
   return (
     <Container maxWidth="xs" sx={{ mt: 8 }}>
@@ -36,12 +49,27 @@ const LoginPage = () => {
       >
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField margin="normal" fullWidth id="account" label="Account" name="account"
-            autoComplete="username" autoFocus value={account} onChange={(e) => setAccount(e.target.value)}
+          <TextField
+            margin="normal"
+            fullWidth
+            id="userName"
+            label="Username"
+            name="userName"
+            autoComplete="username"
+            autoFocus
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
           />
           <TextField
-            margin="normal" fullWidth name="password" label="Password" type="password"
-            id="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)}
+            margin="normal"
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <Button
             type="submit"
@@ -53,7 +81,7 @@ const LoginPage = () => {
           </Button>
         </Box>
         <Typography variant="body2" sx={{ mt: 2 }}>
-          Don&apos;t have an account? <Link href="/registe">Register</Link>
+          Don&apos;t have an account? <Link href="/register">Register</Link>
         </Typography>
       </Box>
     </Container>

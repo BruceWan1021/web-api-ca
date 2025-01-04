@@ -149,6 +149,7 @@ import LoginPage from "./pages/loginPage";
 import PopularPage from "./pages/popularPage"
 import WatchListPage from './pages/watchListPage'
 import RegistePage from "./pages/registePage";
+import AuthContextProvider from './context/authContext';
 
 const App = () => {
 
@@ -165,6 +166,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <SiteHeader />
+        <AuthContextProvider>
         <MoviesContextProvider>
         <Routes>
           <Route path="/reviews/:id" element={ <MovieReviewPage /> } />
@@ -179,9 +181,10 @@ const App = () => {
           <Route path="/movies/popular" element={<PopularPage /> } />
           <Route path="/login" element={<LoginPage setSessionId={setSessionId} setIsAuthenticated={setIsAuthenticated}/>} />
           <Route path="/movies/watchlist" element={<WatchListPage /> } />
-          <Route path="/registe" element={<RegistePage />} />
+          <Route path="/register" element={<RegistePage />} />
         </Routes>
-        </MoviesContextProvider>  
+        </MoviesContextProvider>
+        </AuthContextProvider>  
       </BrowserRouter>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
