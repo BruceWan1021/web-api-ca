@@ -3,6 +3,7 @@ import User from './userModel';
 import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 import Favourite from './favouritesModel';
+import Wachlist from './watchlistModel';
 
 const router = express.Router(); // eslint-disable-line
 
@@ -108,6 +109,45 @@ router.delete('/:username/favourites', asyncHandler(async (req, res) => {
     await Favourite.findOneAndDelete({ username, movieId });
     res.status(200).json({ success: true, msg: 'Favourite successfully deleted.' });
 }))
+
+//Get watchlist
+router.get('/:username/watchlist', asyncHandler(async (req, res) => {
+    const watchlist = await Wachlist.find(req.params);
+    res.status(200).json(watchlist);
+}))
+
+//Delete the watchlist movie
+router.delete('/:username/watchlist', asyncHandler(async (req, res) => {
+    const { username } = req.params; 
+    const { movieId } = req.body;
+
+    if (!username || !movieId) {
+        return res.status(400).json({ success: false, msg: 'UserId and MovieId are required.' });
+    }
+    const existingWanthclist = await Wachlist.findOne({ username, movieId });
+    if (!existingWanthclist) {
+        return res.status(404).json({ success: false, msg: 'Wathchlist not found.' });
+    }
+    await Wachlist.findOneAndDelete({ username, movieId });
+    res.status(200).json({ success: true, msg: 'Watchlist successfully deleted.' });
+}))
+
+//Post watchlist movies
+router.post('/:username/watchlist', asyncHandler(async (req, res) => {
+    const { username } = req.params; 
+    const { movieId } = req.body; 
+
+    if (!username || !movieId) {
+        return res.status(400).json({ success: false, msg: 'Username and MovieId are required.' });
+    }
+    const existingWanthclist = await Wachlist.findOne({ username, movieId });
+    if(existingWanthclist) {
+        return res.status(401).json({ success: false, msg: 'It has already been in watch list.'})
+    }
+
+    await Wachlist.create({ username, movieId });
+    res.status(201).json({ success: true, msg: 'Watchlist successfully added.' });
+}));
 
 
 export default router;
