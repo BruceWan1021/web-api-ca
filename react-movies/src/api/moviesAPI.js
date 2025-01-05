@@ -1,3 +1,4 @@
+import { methods } from "uview-ui/libs/mixin/mixin";
 import { fetchAPI } from "./apiClient";
 
 export const getMovies = async ({queryKey}) => {
@@ -53,3 +54,26 @@ export const getActorCredits = async ({queryKey}) => {
     const { id } = idPart;
     return await fetchAPI(`/movies/tmdb/actors/credits/${id}`);
 }
+
+export const getReviews = async (movieId) => {
+    return await fetchAPI(`/movies/tmdb/reviews/${movieId}`);
+};
+
+export const addReviews = async (movieId, author, review, rating) => {
+    try {
+        const response = await fetchAPI(`/movies/${movieId}/review`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                author, 
+                movieId,
+                review,  
+                rating   
+            }),
+        });
+        return response;
+    } catch (error) {
+        console.error("Error adding review:", error.message);
+        throw error;
+    }
+};

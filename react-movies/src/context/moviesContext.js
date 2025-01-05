@@ -3,9 +3,9 @@ import { getFavorites } from '../api/userAPI';
 import { addToFavorite } from '../api/userAPI';
 import { removeFromFavorite } from "../api/userAPI";
 import { getWatchlistMovies } from '../api/tmdb-api';
-
 import { toggleWatchlist } from '../api/tmdb-api';
-import { addRating} from '../api/tmdb-api'
+import { addRating} from '../api/tmdb-api';
+import { addReviews } from '../api/moviesAPI';
 
 export const MoviesContext = React.createContext(null);
 
@@ -40,7 +40,15 @@ const MoviesContextProvider = (props) => {
   }, []);
 
   const addReview = (movie, review) => {
-    setMyReviews( {...myReviews, [movie.id]: review } )
+    setMyReviews( {...myReviews, [review.movieId]: review } )
+    console.log(review);
+    addReviews(review.movieId, review.author, review.review, review.rating)
+      .then((response) => {
+        console.log("Review successfully submitted:", response);
+      })
+      .catch((error) => {
+        console.error("Error adding review:", error.message);
+      });
   };
   //console.log(myReviews);
 
@@ -60,7 +68,6 @@ const MoviesContextProvider = (props) => {
     }
   };
   
-
   useEffect(() => {
     const sessionId = sessionStorage.getItem("sessionId");
     const fetchWatchlistMovies = async () => {

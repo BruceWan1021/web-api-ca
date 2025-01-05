@@ -88,39 +88,22 @@ router.get('/tmdb/reviews/:movieId', asyncHandler(async (req, res) => {
     res.status(200).json(movieGenres);
 }));
 
-//Add movie reviews
+// Add movie reviews
 router.post('/:movieId/review', asyncHandler(async (req, res) => {
-    const { movieId } = req.params;
-    const { userId, content } = req.body;
-    
-    if(!userId || !content) {
-        return res.status(400).json({ success: false, msg: 'UserId and Content are required.'})
-    };
-    const existingReview = await Review.findOne({userId, movieId});
-    if(existingReview) {
-        return res.status(409).json({ success: false, msg: 'You have already reviewed this movie.'})
-    }
-    await Review.create({userId, movieId, content});
-    res.status(201).json({success: true, msg: 'Review successfully added.'})
-}))
+    const { movieId } = req.params; 
+    const { author, review, rating } = req.body;
 
-//Modify movie review
-router.put('/:movieId/review/:reviewId', asyncHandler(async (req, res) => {
-    const { reviewId } = req.params;
-    const { content } = req.body;
+    if (!author || !review || rating == null) {
+        return res.status(400).json({ success: false, msg: 'Author, Review, and Rating are required.' });
+    }
 
-    if (!content) {
-        return res.status(400).json({ success: false, msg: 'Content is required to update the review.' });
+    const existingReview = await Review.findOne({ author, movieId });
+    if (existingReview) {
+        return res.status(409).json({ success: false, msg: 'You have already reviewed this movie.' });
     }
-    const updatedReview = await Review.findByIdAndUpdate(
-        reviewId,
-        { content, updatedAt: Date.now() },
-        { new: true } 
-    );
-    if (!updatedReview) {
-        return res.status(404).json({ success: false, msg: 'Review not found.' });
-    }
-    res.status(200).json({ success: true, msg: 'Review successfully updated.'});
+
+    const newReview = await Review.create({ author, movieId, review, rating });
+    res.status(201).json({success: true, msg: 'Review successfully added.'});
 }));
 
 //Delete movie review
