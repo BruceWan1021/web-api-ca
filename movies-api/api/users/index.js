@@ -71,41 +71,41 @@ async function authenticateUser(req, res) {
 }
 
 //Post favourite movies
-router.post('/:userId/favourite', asyncHandler(async (req, res) => {
-    const { userId } = req.params; 
+router.post('/:username/favourites', asyncHandler(async (req, res) => {
+    const { username } = req.params; 
     const { movieId } = req.body; 
 
-    if (!userId || !movieId) {
-        return res.status(400).json({ success: false, msg: 'UserId and MovieId are required.' });
+    if (!username || !movieId) {
+        return res.status(400).json({ success: false, msg: 'Username and MovieId are required.' });
     }
-    const existingFavourite = await Favourite.findOne({ userId, movieId });
+    const existingFavourite = await Favourite.findOne({ username, movieId });
     if(existingFavourite) {
         return res.status(401).json({ success: false, msg: 'It has already been in favourite list.'})
     }
 
-    await Favourite.create({ userId, movieId });
+    await Favourite.create({ username, movieId });
     res.status(201).json({ success: true, msg: 'Favourite successfully added.' });
 }));
 
 //Get all favourites
-router.get('/:userId/favourites', asyncHandler(async (req, res) => {
+router.get('/:username/favourites', asyncHandler(async (req, res) => {
     const favourites = await Favourite.find(req.params);
     res.status(200).json(favourites);
 }))
 
 //Delete the favourite movie
-router.delete('/:userId/favourite', asyncHandler(async (req, res) => {
-    const { userId } = req.params; 
+router.delete('/:username/favourites', asyncHandler(async (req, res) => {
+    const { username } = req.params; 
     const { movieId } = req.body;
 
-    if (!userId || !movieId) {
+    if (!username || !movieId) {
         return res.status(400).json({ success: false, msg: 'UserId and MovieId are required.' });
     }
-    const existingFavourite = await Favourite.findOne({ userId, movieId });
+    const existingFavourite = await Favourite.findOne({ username, movieId });
     if (!existingFavourite) {
         return res.status(404).json({ success: false, msg: 'Favourite not found.' });
     }
-    await Favourite.findOneAndDelete({ userId, movieId });
+    await Favourite.findOneAndDelete({ username, movieId });
     res.status(200).json({ success: true, msg: 'Favourite successfully deleted.' });
 }))
 

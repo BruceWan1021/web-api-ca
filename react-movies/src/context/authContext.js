@@ -1,5 +1,6 @@
 import React, { useState, createContext } from "react";
 import { login, signup } from "../api/userAPI";
+import { set } from "mongoose";
 
 export const AuthContext = createContext(null);
 
@@ -21,6 +22,7 @@ const AuthContextProvider = (props) => {
       setToken(result.token)
       setIsAuthenticated(true);
       setUserName(username);
+      sessionStorage.setItem("username", username);
     }
   };
 

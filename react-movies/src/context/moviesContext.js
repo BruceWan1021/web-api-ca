@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { getFavouriteMovies } from '../api/tmdb-api';
+import { getFavorites } from '../api/userAPI';
+import { addToFavorite } from '../api/userAPI';
+import { removeFromFavorite } from "../api/userAPI";
 import { getWatchlistMovies } from '../api/tmdb-api';
-import { toggleFavorite } from '../api/tmdb-api';
+
 import { toggleWatchlist } from '../api/tmdb-api';
 import { addRating} from '../api/tmdb-api'
 
@@ -13,23 +15,22 @@ const MoviesContextProvider = (props) => {
   const [mustWatch, setMustWatch] = useState( [] )
   const [rating, setRating] = useState( [] ) 
 
+  const username = sessionStorage.getItem("username");
+
   const addToFavorites = (movie) => {
-    const sessionId = sessionStorage.getItem("sessionId");
     let newFavorites = [];
     if (!favorites.includes(movie.id)){
       newFavorites = [...favorites, movie.id];
     }
-    setFavorites(newFavorites)
-    toggleFavorite(sessionId, movie.id, true)
-    .catch((error) => console.error("Error adding to favorites:", error));
+    setFavorites(newFavorites);
+    addToFavorite(username, movie.id);
   };
 
   useEffect(() => {
-    const sessionId = sessionStorage.getItem("sessionId");
     const fetchFavoriteMovies = async () => {
       try {
-        const data = await getFavouriteMovies(sessionId);
-        const movieIds = data.results.map(movie => movie.id);
+        const data = await getFavorites(username);
+        const movieIds = data.map(movie => movie.movieId);
         setFavorites(movieIds);
       } catch (error) {
         console.error("Error fetching favorite movies:", error);
@@ -38,21 +39,16 @@ const MoviesContextProvider = (props) => {
     fetchFavoriteMovies();
   }, []);
 
-
-
   const addReview = (movie, review) => {
     setMyReviews( {...myReviews, [movie.id]: review } )
   };
   //console.log(myReviews);
 
-  // We will use this function in the next step
   const removeFromFavorites = (movie) => {
-    const sessionId = sessionStorage.getItem("sessionId");
     setFavorites( favorites.filter(
       (mId) => mId !== movie.id
     ) )
-    toggleFavorite(sessionId, movie.id, false)
-      .catch((error) => console.error("Error removing from favourites:", error))
+    removeFromFavorite(username, movie.id)
   };
 
   const addToPlaylist = (movie) => {

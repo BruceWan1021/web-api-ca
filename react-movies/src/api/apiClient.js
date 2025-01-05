@@ -3,7 +3,7 @@ const BASE_URL = process.env.REACT_APP_API_URL;
 export const fetchAPI = async (endpoint, options = {}, requiresAuth = false) => {
     const url = `${BASE_URL}${endpoint}`;
     console.log('Request URL:', url);
-    const token = window.localStorage.getItem('token');
+    const token = window.sessionStorage.getItem('token');
 
     const headers = {
         'Content-Type': 'application/json',
